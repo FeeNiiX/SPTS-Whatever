@@ -68,7 +68,7 @@ Section:NewToggle("Anti Mod", "Desconecta ao detectar moderadores", function(sta
 end)
 
 Section:NewButton("Hide Name", "Remove nome visível do personagem", function(state)
-    if getgenv().hn = state
+    if getgenv().hn then
         pcall(function()
             local character = Players.LocalPlayer.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
