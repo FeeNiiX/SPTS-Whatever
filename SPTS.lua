@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Camera = game.Workspace.CurrentCamera -- Hmm Workspace??
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("SPTS : Whatever V3.14159", "DarkTheme")
@@ -22,14 +23,27 @@ end)
 
 -- game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent"):FireServer({[1] = "EquipWeight_Request", [2] = 1}) NÃO APAGAR !!!
 
+function getRoot(char)
+	local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+	return rootPart
+end
+
 local function setupCharacter(character)
     character:WaitForChild("Humanoid").Died:Connect(function()
+        local root = getRoot(Players.LocalPlayer.Character)
+        if root then
+            lastDeath = root.CFrame
+        end
         if getgenv().ar then
             ReplicatedStorage:WaitForChild("RemoteEvent"):FireServer({[1] = "Respawn"})
-            task.wait(0.1)
+            task.wait(0.2)
+            local newRoot = getRoot(Players.LocalPlayer.Character)
+            if newRoot then
+                newRoot.CFrame = lastDeath
+            end
             Players.LocalPlayer.PlayerGui.ScreenGui.Enabled = true
-            task.wait(3.1)
-            game.Lighting.Blur.Enabled = false; Players.LocalPlayer.PlayerGui.IntroGui.Enabled = false
+            task.wait(3)
+            Players.LocalPlayer.PlayerGui.IntroGui.Enabled = false; game.Lighting.Blur.Enabled = false
         end
     end)
 end
@@ -38,6 +52,7 @@ Players.LocalPlayer.CharacterAdded:Connect(setupCharacter)
 if Players.LocalPlayer.Character then
     setupCharacter(Players.LocalPlayer.Character)
 end
+
 
 Section:NewButton("Remove Nuvem", "Remove nuvens do mapa", function()
     Workspace.Map.RealCloud:Destroy()
